@@ -7,6 +7,13 @@ public class TankController : MonoBehaviour
     [SerializeField] float _moveSpeed = .25f;
     [SerializeField] float _turnSpeed = 2f;
 
+    [SerializeField] float _maxSpeed = .25f;
+    public float MaxSpeed
+    {
+        get => _maxSpeed;
+        set => _maxSpeed = value;
+    }
+
     Rigidbody _rb = null;
 
     private void Awake()
@@ -22,6 +29,9 @@ public class TankController : MonoBehaviour
 
     public void MoveTank()
     {
+        //HOTFIX: made tank move at max speed
+        _moveSpeed = _maxSpeed;
+
         // calculate the move amount
         float moveAmountThisFrame = Input.GetAxis("Vertical") * _moveSpeed;
         // create a vector from amount and direction

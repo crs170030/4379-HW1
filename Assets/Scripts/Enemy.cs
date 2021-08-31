@@ -6,8 +6,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] int _damageAmount = 1;
-    [SerializeField] ParticleSystem _impactParticles;
-    [SerializeField] AudioClip _impactSound;
+    [SerializeField] ParticleSystem _impactParticles = null;
+    [SerializeField] AudioClip _impactSound = null;
 
     Rigidbody _rb;
 
@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void PlayerImpact(Player player)
+    protected virtual void PlayerImpact(Player player)
     {
         player.DecreaseHealth(_damageAmount);
     }
