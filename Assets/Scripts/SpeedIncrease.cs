@@ -9,11 +9,12 @@ public class SpeedIncrease : CollectibleBase
     protected override void Collect(Player player)
     {
         //pull motor controller from player
-        TankController controller = player.GetComponent<TankController>();
-        if(controller != null)
+        //TankController controller = player.GetComponent<TankController>();
+        if(player != null)//controller != null
         {
-            controller.MaxSpeed += _speedAmount;
-            Debug.Log("max speed is now " + controller.MaxSpeed);
+            //controller.MaxSpeed += _speedAmount;
+            //Debug.Log("max speed is now " + controller.MaxSpeed);
+            player.ChangeSpeed(_speedAmount);
         }
     }
 
