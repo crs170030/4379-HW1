@@ -6,6 +6,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] int _damageAmount = 1;
+    [SerializeField] float bounce = 5f;
     [SerializeField] ParticleSystem _impactParticles = null;
     [SerializeField] AudioClip _impactSound = null;
 
@@ -28,7 +29,11 @@ public class Enemy : MonoBehaviour
 
     protected virtual void PlayerImpact(Player player)
     {
+        //hurt player
         player.DecreaseHealth(_damageAmount);
+        //bounce away
+        transform.LookAt(player.transform);
+        _rb.AddForce(transform.forward * -bounce);
     }
 
     private void ImpactFeedback()

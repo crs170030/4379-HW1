@@ -125,5 +125,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _movementSpeed: 1
   _collectParticles: {fileID: 0}
-  _collectSound: {fileID: 0}
-  _speedAmount: 50
+  _collectSound: {fileID: 8300000, guid: bf2306c15b6e0c541a6f6226dfd56c30, type: 3}
+  _speedAmount: 0.25

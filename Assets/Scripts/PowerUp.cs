@@ -2,45 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class PowerUpBase : CollectibleBase
+public abstract class PowerUpBase : MonoBehaviour
 {
     [SerializeField] float powerupDuration = 5f;
-
-    //bad solution: change every tank piece indivdually. Better to change the body material itself in real time?
-    [SerializeField] GameObject turret = null;
-    [SerializeField] GameObject body = null;
-    [SerializeField] GameObject left_tred = null;
-    [SerializeField] GameObject right_tred = null;
-
-    [SerializeField] Material defaultPaint = null;
-    [SerializeField] Material defaultTires = null;
+    [SerializeField] Material glowup = null;
+    [SerializeField] ParticleSystem _collectParticles = null;
+    [SerializeField] AudioClip _collectSound = null;
+    //[SerializeField] float timeFlash = 0.1f;
 
     protected abstract void PowerUp(Player player);
 
     Player savedPlayer;
     float timeRemaining;
     bool isActive;
+    //bool flashToggle = true;
 
     MeshRenderer _msh;
     BoxCollider _bcd;
+    Rigidbody _rb;     
 
     private void Awake()
     {
         //get powerup visuals
+        _rb = GetComponent<Rigidbody>();
         _msh = GetComponent<MeshRenderer>();
         _bcd = GetComponent<BoxCollider>(); //WARNING: What if shape is not a box?
         //get tank visuals
         
     }
 
-    protected override void Collect(Player player)
+    private void OnTriggerEnter(Collider other)
+    {
+        Player player = other.gameObject.GetComponent<Player>();
+        if (player != null)
+        {
+            Collect(player);
+            //spawn particles and sfx and sex because we need to disable object
+            //Feedback();
+            _collectParticles = Instantiate(_collectParticles, transform.position, Quaternion.identity);
+            AudioHelper.PlayClip2D(_collectSound, 1f);
+        }
+    }
+
+    protected virtual void Collect(Player player)
     {
         //call power up script
         PowerUp(player);
         timeRemaining = powerupDuration;
         isActive = true;
         savedPlayer = player;
+        player.ChangeColor(false, glowup);
         Debug.Log("Powering Up.");
+        Debug.Log("Time remaining == "+ timeRemaining);
         //disable visuals on power up
         //disable mesh renderer
         _msh.enabled = false;
@@ -48,25 +61,35 @@ public abstract class PowerUpBase : CollectibleBase
         _bcd.enabled = false;
     }
 
-    protected virtual void PowerDown(Player player)
+    protected virtual void PowerDown(Player player) //override this if the powerup need to do something
+    {
+        PowerDownBase(player); 
+    }
+
+    protected virtual void PowerDownBase(Player player)
     {
         Debug.Log("Powering Down...");
         isActive = false;
 
         //reset colors on player
-        turret.GetComponent<MeshRenderer>().material = defaultPaint;
-        body.GetComponent<MeshRenderer>().material = defaultPaint;
-        left_tred.GetComponent<MeshRenderer>().material = defaultTires;
-        right_tred.GetComponent<MeshRenderer>().material = defaultTires;
+        player.ChangeColor(true, glowup);
 
+        //disable the power up
         gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        if(timeRemaining > 0)
+        if(timeRemaining >= 0)
         {
+            //Debug.Log("Time remaining == "+ timeRemaining);
             timeRemaining -= Time.deltaTime;
+            /*timeFlash -= Time.deltaTime;
+            if(timeRemaining < 1 && timeFlash >= 0)
+            {
+                flashToggle = !flashToggle;
+                savedPlayer.ChangeColor(flashToggle, glowup);
+            }*/
         }
         else
         {
